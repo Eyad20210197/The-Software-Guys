@@ -4,6 +4,9 @@ import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { DbModule } from './modules/db/db.module';
 import { LeadsModule } from './modules/leads/leads.module';
+import { AuthModule } from './modules/auth/auth.module';
+import { AdminModule } from './modules/admin/admin.module';
+import { SeoModule } from './modules/seo/seo.module';
 import { ShowcasesModule } from './modules/showcases/showcases.module';
 
 @Module({
@@ -20,6 +23,9 @@ import { ShowcasesModule } from './modules/showcases/showcases.module';
     DbModule,
     LeadsModule,
     ShowcasesModule,
+    AuthModule,
+    AdminModule,
+    SeoModule,
   ],
   providers: [
     {

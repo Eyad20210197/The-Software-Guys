@@ -32,4 +32,31 @@ export class LeadsService {
     });
     return { success: true, leadId: lead.id };
   }
+
+  async findAllContacts() {
+    return this.db.prisma.contactLead.findMany({
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
+  async updateContactStatus(id: string, status: any) {
+    const updated = await this.db.prisma.contactLead.update({
+      where: { id },
+      data: { status },
+    });
+    return { success: true, lead: updated };
+  }
+
+  async deleteContact(id: string) {
+    await this.db.prisma.contactLead.delete({
+      where: { id },
+    });
+    return { success: true };
+  }
+
+  async findAllNewsletters() {
+    return this.db.prisma.newsletterLead.findMany({
+      orderBy: { createdAt: 'desc' },
+    });
+  }
 }
