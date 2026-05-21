@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { ExpressAdapter } from '@nestjs/platform-express';
 import { AppModule } from './app.module';
+import { getCorsOptions } from './cors';
 import express from 'express';
 import serverless from 'serverless-http';
 
@@ -13,10 +14,7 @@ async function bootstrap() {
   if (cachedHandler) {
     return cachedHandler;
   }
-  const app = await NestFactory.create(
-    AppModule,
-    new ExpressAdapter(expressApp),
-  );
+  const app = await NestFactory.create(AppModule, new ExpressAdapter(expressApp));
 
   // Enable global API prefixing
   app.setGlobalPrefix('api/v1');
@@ -31,10 +29,7 @@ async function bootstrap() {
   );
 
   // Enable CORS for frontend requests
-  app.enableCors({
-    origin: process.env.FRONTEND_URL || '*',
-    credentials: true,
-  });
+  app.enableCors(getCorsOptions());
 
   await app.init();
   cachedHandler = serverless(expressApp);
