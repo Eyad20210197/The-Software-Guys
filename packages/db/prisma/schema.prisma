@@ -1,0 +1,125 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// 1. ADMIN USER & AUTHENTICATION
+model Admin {
+  id           String        @id @default(uuid())
+  email        String        @unique
+  passwordHash String
+  name         String
+  role         AdminRole     @default(EDITOR)
+  sessions     Session[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+enum AdminRole {
+  SUPERADMIN
+  EDITOR
+}
+
+model Session {
+  id        String   @id @default(uuid())
+  adminId   String
+  token     String   @unique
+  expiresAt DateTime
+  admin     Admin    @relation(fields: [adminId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+}
+
+// 2. PORTFOLIO & SHOWCASE MANAGEMENT
+model Showcase {
+  id              String          @id @default(uuid())
+  title           String
+  subtitle        String
+  slug            String          @unique
+  description     String
+  category        String          // e.g. "Web Application", "Mobile App"
+  clientName      String
+  projectUrl      String?
+  mainImage       String
+  isFeatured      Boolean         @default(false)
+  isPublished     Boolean         @default(false)
+  technologies    ShowcaseTech[]
+  assets          ShowcaseAsset[]
+  seoMetadata     SEOMetadata?    @relation(fields: [seoMetadataId], references: [id])
+  seoMetadataId   String?         @unique
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+}
+
+model ShowcaseAsset {
+  id         String    @id @default(uuid())
+  showcaseId String
+  type       AssetType @default(IMAGE)
+  url        String
+  altText    String?
+  position   Int       @default(0)
+  showcase   Showcase  @relation(fields: [showcaseId], references: [id], onDelete: Cascade)
+  createdAt  DateTime  @default(now())
+}
+
+enum AssetType {
+  IMAGE
+  VIDEO
+}
+
+model ShowcaseTech {
+  id         String   @id @default(uuid())
+  showcaseId String
+  name       String
+  category   String   // e.g., "Frontend", "Backend", "Database"
+  icon       String?  // Lucide Icon name or material symbol tag
+  showcase   Showcase @relation(fields: [showcaseId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+}
+
+// 3. LEADS & CONTACT FORM SUBMISSIONS
+model ContactLead {
+  id          String     @id @default(uuid())
+  firstName   String
+  lastName    String
+  email       String
+  projectType String     // e.g., "Custom SaaS", "UI/UX Design", "Mobile App", "Other"
+  message     String
+  status      LeadStatus @default(PENDING)
+  ipAddress   String?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+enum LeadStatus {
+  PENDING
+  REVIEWED
+  CONTACTED
+  ARCHIVED
+}
+
+model NewsletterLead {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  active    Boolean  @default(true)
+  ipAddress String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// 4. SEO & DYNAMIC METADATA
+model SEOMetadata {
+  id              String    @id @default(uuid())
+  path            String    @unique // e.g. "/services", "/showcases/nexus-analytics"
+  metaTitle       String
+  metaDescription String
+  ogImage         String?
+  keywords        String[]
+  isOptimized     Boolean   @default(false)
+  showcase        Showcase?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}

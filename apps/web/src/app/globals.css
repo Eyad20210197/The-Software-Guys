@@ -1,0 +1,24 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-brand-bg text-brand-dark min-h-screen selection:bg-brand-secondaryAlt selection:text-brand-dark;
+  }
+}
+
+/* Custom Neo-Brutalist utility classes for animations and states */
+@layer utilities {
+  .neo-hover-translate {
+    transition: transform 0.1s ease-in-out, box-shadow 0.1s ease-in-out;
+  }
+  .neo-hover-translate:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 8px 8px 0px 0px #1A1C1C;
+  }
+  .neo-hover-translate:active {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0px 0px #1A1C1C;
+  }
+}
